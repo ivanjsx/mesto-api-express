@@ -39,12 +39,16 @@ export const retrieveUser = (request: Request, response: Response) => User.find(
 
 export const createUser = (request: Request, response: Response) => User.create(
   {
-    name: request.body.name,
-    about: request.body.about,
-    avatar: request.body.avatar,
+    name: request.body?.name,
+    about: request.body?.about,
+    avatar: request.body?.avatar,
   }
 ).then(
-  (user: UserInterface) => response.status(201).send(user)
+  (user: UserInterface) => response.status(201).send(
+    user
+  )
 ).catch(
-  (error) => response.status(400).send(error)
+  (error) => response.status(400).send(
+    { message: error.message }
+  )
 );
