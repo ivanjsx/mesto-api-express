@@ -2,13 +2,13 @@
 import { model, Schema } from "mongoose";
 
 // interfaces
-import CardInterface from "interfaces/card";
+import CardInterface from "../interfaces/card";
 
 // validators
-import urlValidator from "validators/url";
+import urlValidator from "../validators/url";
 
 // constants
-import { MAX_NAME_LENGTH, MIN_NAME_LENGTH } from "utils/constants";
+import { MAX_NAME_LENGTH, MIN_NAME_LENGTH } from "../utils/constants";
 
 
 
