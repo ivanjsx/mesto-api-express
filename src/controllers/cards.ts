@@ -49,3 +49,39 @@ export function removeCard(request: Request, response: Response) {
     )
   );
 };
+
+
+
+export function likeCard(request: CustomRequest, response: Response) {
+  return Card.findByIdAndUpdate(
+    request.params.cardId,
+    { $addToSet: { likes: request.user?._id } },
+    { new: true }
+  ).then(
+    (card) => response.status(200).send(
+      { data: card }
+    )
+  ).catch(
+    () => response.status(500).send(
+      { message: "Произошла ошибка" }
+    )
+  );
+};
+
+
+
+export function dislikeCard(request: CustomRequest, response: Response) {
+  return Card.findByIdAndUpdate(
+    request.params.cardId,
+    { $pull: { likes: request.user?._id } },
+    { new: true }
+  ).then(
+    (card) => response.status(200).send(
+      { data: card }
+    )
+  ).catch(
+    () => response.status(500).send(
+      { message: "Произошла ошибка" }
+    )
+  );
+};
