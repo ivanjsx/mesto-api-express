@@ -1,11 +1,10 @@
 // libraries
-import { Request, Response, NextFunction } from "express";
+import { Response, NextFunction } from "express";
 
-interface CustomRequest extends Request {
-  user?: {
-    _id: string
-  }
-};
+// interfaces
+import CustomRequest from "../interfaces/custom-request";
+
+
 
 const userThumbnail = (request: CustomRequest, response: Response, next: NextFunction) => {
   request.user = {
