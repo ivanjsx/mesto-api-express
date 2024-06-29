@@ -1,19 +1,16 @@
 // libraries
 import { model, Schema } from "mongoose";
 
+// interfaces
+import UserInterface from "interfaces/user";
+
 // validators
-import urlValidator from "../validators/url";
+import urlValidator from "validators/url";
 
 // constants
 import { MAX_ABOUT_LENGTH, MAX_NAME_LENGTH, MIN_ABOUT_LENGTH, MIN_NAME_LENGTH } from "utils/constants";
 
 
-
-interface UserInterface {
-  name: string;
-  about: string;
-  avatar: string;
-};
 
 const UserSchema = new Schema<UserInterface>({
   name: {

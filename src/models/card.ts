@@ -1,21 +1,16 @@
 // libraries
 import { model, Schema } from "mongoose";
 
+// interfaces
+import CardInterface from "interfaces/card";
+
 // validators
-import urlValidator from "../validators/url";
+import urlValidator from "validators/url";
 
 // constants
 import { MAX_NAME_LENGTH, MIN_NAME_LENGTH } from "utils/constants";
 
 
-
-interface CardInterface {
-  name: string;
-  link: string;
-  createdAt: Date;
-  owner: Schema.Types.ObjectId;
-  likes: Array<Schema.Types.ObjectId>;
-};
 
 const CardSchema = new Schema<CardInterface>({
   name: {
