@@ -6,6 +6,8 @@ import UserInterface from "../interfaces/user";
 
 // validators
 import urlValidator from "../validators/url";
+import emailValidator from "../validators/email";
+import passwordValidator from "../validators/password";
 
 // constants
 import { MAX_ABOUT_LENGTH, MAX_NAME_LENGTH, MIN_ABOUT_LENGTH, MIN_NAME_LENGTH } from "../utils/constants";
@@ -29,6 +31,17 @@ const UserSchema = new Schema<UserInterface>({
     type: String,
     required: true,
     validate: urlValidator
+  },
+  email: {
+    type: String,
+    unique: true,
+    required: true,
+    validate: emailValidator
+  },
+  password: {
+    type: String,
+    required: true,
+    validate: passwordValidator
   }
 });
 
