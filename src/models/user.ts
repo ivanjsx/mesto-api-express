@@ -1,5 +1,6 @@
 // libraries
-import { model, Schema } from "mongoose";
+import bcrypt from "bcryptjs";
+import { model, Model, Schema, Document } from "mongoose";
 
 // interfaces
 import UserInterface from "../interfaces/user";
@@ -14,7 +15,11 @@ import { MAX_ABOUT_LENGTH, MAX_NAME_LENGTH, MIN_ABOUT_LENGTH, MIN_NAME_LENGTH } 
 
 
 
-const UserSchema = new Schema<UserInterface>({
+interface UserModel extends Model<UserInterface> {
+  findUserByCredentials: (email: string, password: string) => Promise<Document<unknown, object, UserInterface>>
+};
+
+const UserSchema = new Schema<UserInterface, UserModel>({
   name: {
     type: String,
     required: false,
@@ -48,6 +53,24 @@ const UserSchema = new Schema<UserInterface>({
   }
 });
 
-const UserModel = model<UserInterface>("user", UserSchema);
+UserSchema.static(
+  "findUserByCredentials", function (email: string, password: string) {
+    return this.findOne({ email }).then(
+      (user) => {
+        if (!user) {
+          return Promise.reject(new Error("Неправильные почта или пароль"));
+        };
+        return bcrypt.compare(password, user.password).then(
+          (matched) => {
+            if (!matched) {
+              return Promise.reject(new Error("Неправильные почта или пароль"));
+            };
+            return user;
+          }
+        );
+      }
+    );
+  }
+);
 
-export default UserModel;
+export default model<UserInterface, UserModel>("user", UserSchema);
