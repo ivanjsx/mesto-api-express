@@ -17,8 +17,8 @@ const app = express();
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
-app.use("/users", usersRoutes);
 app.use(userThumbnail);
+app.use("/users", usersRoutes);
 app.use("/cards", cardsRoutes);
 
 const { PORT = 3000, BASE_PATH } = process.env;
