@@ -7,15 +7,18 @@ import Card from "../models/card";
 // interfaces
 import CustomRequest from "../interfaces/custom-request";
 
+// http status codes
+import { BAD_REQUEST, CREATED, INTERNAL_SERVER_ERROR, NO_CONTENT, NOT_FOUND, OK } from "../utils/http-status-codes";
+
 
 
 export function listCards(request: Request, response: Response) {
   return Card.find({}).then(
-    (cards) => response.status(200).send(
+    (cards) => response.status(OK).send(
       { data: cards }
     )
   ).catch(
-    (error) => response.status(500).send(
+    (error) => response.status(INTERNAL_SERVER_ERROR).send(
       { message: error.message }
     )
   );
@@ -26,11 +29,11 @@ export function listCards(request: Request, response: Response) {
 export function createCard(request: CustomRequest, response: Response) {
   const { name, link } = request.body;
   return Card.create({ name, link, owner: request.user!._id }).then(
-    (card) => response.status(201).send(
+    (card) => response.status(CREATED).send(
       { data: card }
     )
   ).catch(
-    (error) => response.status(400).send(
+    (error) => response.status(BAD_REQUEST).send(
       { message: error.message }
     )
   );
@@ -42,14 +45,14 @@ export function removeCard(request: Request, response: Response) {
   return Card.findByIdAndDelete(request.params.cardId).then(
     (card) => {
       if (!card) {
-        return response.status(404).send(
+        return response.status(NOT_FOUND).send(
           { message: "Нет карточки с таким id" }
         );
       };
-      return response.status(204).send();
+      return response.status(NO_CONTENT).send();
     }
   ).catch(
-    (error) => response.status(500).send(
+    (error) => response.status(INTERNAL_SERVER_ERROR).send(
       { message: error.message }
     )
   );
@@ -65,16 +68,16 @@ export function likeCard(request: CustomRequest, response: Response) {
   ).then(
     (card) => {
       if (!card) {
-        return response.status(404).send(
+        return response.status(NOT_FOUND).send(
           { message: "Нет карточки с таким id" }
         );
       };
-      return response.status(200).send(
+      return response.status(OK).send(
         { data: card }
       );
     }
   ).catch(
-    (error) => response.status(500).send(
+    (error) => response.status(INTERNAL_SERVER_ERROR).send(
       { message: error.message }
     )
   );
@@ -90,16 +93,16 @@ export function dislikeCard(request: CustomRequest, response: Response) {
   ).then(
     (card) => {
       if (!card) {
-        return response.status(404).send(
+        return response.status(NOT_FOUND).send(
           { message: "Нет карточки с таким id" }
         );
       };
-      return response.status(200).send(
+      return response.status(OK).send(
         { data: card }
       );
     }
   ).catch(
-    (error) => response.status(500).send(
+    (error) => response.status(INTERNAL_SERVER_ERROR).send(
       { message: error.message }
     )
   );

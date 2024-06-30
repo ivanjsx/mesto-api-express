@@ -3,17 +3,22 @@ import { Request, Response } from "express";
 
 // models
 import User from "../models/user";
+
+// interfaces
 import CustomRequest from "interfaces/custom-request";
+
+// http status codes
+import { BAD_REQUEST, CREATED, INTERNAL_SERVER_ERROR, NOT_FOUND, OK } from "../utils/http-status-codes";
 
 
 
 export function listUsers(request: Request, response: Response) {
   return User.find({}).then(
-    (users) => response.status(200).send(
+    (users) => response.status(OK).send(
       { data: users }
     )
   ).catch(
-    (error) => response.status(500).send(
+    (error) => response.status(INTERNAL_SERVER_ERROR).send(
       { message: error.message }
     )
   );
@@ -24,11 +29,11 @@ export function listUsers(request: Request, response: Response) {
 export function createUser(request: Request, response: Response) {
   const { name, about, avatar } = request.body;
   return User.create({ name, about, avatar }).then(
-    (user) => response.status(201).send(
+    (user) => response.status(CREATED).send(
       { data: user }
     )
   ).catch(
-    (error) => response.status(400).send(
+    (error) => response.status(BAD_REQUEST).send(
       { message: error.message }
     )
   );
@@ -40,22 +45,22 @@ export function retrieveUser(request: Request, response: Response) {
   return User.findById(request.params.userId).then(
     (user) => {
       if (!user) {
-        return response.status(404).send(
+        return response.status(NOT_FOUND).send(
           { message: "Нет пользователя с таким id" }
         );
       };
-      return response.status(200).send(
+      return response.status(OK).send(
         { data: user }
       );
     }
   ).catch(
     (error) => {
       if (error.name === "CastError") {
-        return response.status(400).send(
+        return response.status(BAD_REQUEST).send(
           { message: "Невалидный id" }
         );
       };
-      return response.status(500).send(
+      return response.status(INTERNAL_SERVER_ERROR).send(
         { message: error.message }
       );
     }
@@ -73,16 +78,16 @@ export function updateUserInfo(request: CustomRequest, response: Response) {
   ).then(
     (user) => {
       if (!user) {
-        return response.status(404).send(
+        return response.status(NOT_FOUND).send(
           { message: "Нет пользователя с таким id" }
         );
       };
-      return response.status(200).send(
+      return response.status(OK).send(
         { data: user }
       );
     }
   ).catch(
-    (error) => response.status(400).send(
+    (error) => response.status(BAD_REQUEST).send(
       { message: error.message }
     )
   );
@@ -99,16 +104,16 @@ export function updateUserAvatar(request: CustomRequest, response: Response) {
   ).then(
     (user) => {
       if (!user) {
-        return response.status(404).send(
+        return response.status(NOT_FOUND).send(
           { message: "Нет пользователя с таким id" }
         );
       };
-      return response.status(200).send(
+      return response.status(OK).send(
         { data: user }
       );
     }
   ).catch(
-    (error) => response.status(400).send(
+    (error) => response.status(BAD_REQUEST).send(
       { message: error.message }
     )
   );
