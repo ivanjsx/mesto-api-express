@@ -17,19 +17,22 @@ import { MAX_ABOUT_LENGTH, MAX_NAME_LENGTH, MIN_ABOUT_LENGTH, MIN_NAME_LENGTH } 
 const UserSchema = new Schema<UserInterface>({
   name: {
     type: String,
-    required: true,
+    required: false,
+    default: "Жак-Ив Кусто",
     minlength: MIN_NAME_LENGTH,
     maxlength: MAX_NAME_LENGTH
   },
   about: {
     type: String,
-    required: true,
+    required: false,
+    default: "Исследователь",
     minlength: MIN_ABOUT_LENGTH,
     maxlength: MAX_ABOUT_LENGTH
   },
   avatar: {
     type: String,
-    required: true,
+    required: false,
+    default: "https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png",
     validate: urlValidator
   },
   email: {
