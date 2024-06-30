@@ -1,4 +1,5 @@
 // libraries
+import bcrypt from "bcryptjs";
 import { Request, Response } from "express";
 
 // models
@@ -27,8 +28,12 @@ export function listUsers(request: Request, response: Response) {
 
 
 export function createUser(request: Request, response: Response) {
-  const { name, about, avatar } = request.body;
-  return User.create({ name, about, avatar }).then(
+  const { name, about, avatar, email, password } = request.body;
+  return bcrypt.hash(password, 10).then(
+    (hash) => User.create(
+      { name, about, avatar, email, password: hash }
+    )
+  ).then(
     (user) => response.status(CREATED).send(
       { data: user }
     )
