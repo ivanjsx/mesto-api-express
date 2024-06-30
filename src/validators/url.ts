@@ -1,8 +1,8 @@
 import { isURL } from "validator";
 
-interface ValidatorPropsInterface {
-  value: string;
-};
+import ValidatorPropsInterface from "../interfaces/validator-props";
+
+
 
 function validator(value: string) {
   return isURL(
