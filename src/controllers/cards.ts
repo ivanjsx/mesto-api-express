@@ -15,8 +15,8 @@ export function listCards(request: Request, response: Response) {
       { data: cards }
     )
   ).catch(
-    () => response.status(500).send(
-      { message: "Произошла ошибка" }
+    (error) => response.status(500).send(
+      { message: error.message }
     )
   );
 };
@@ -40,12 +40,17 @@ export function createCard(request: CustomRequest, response: Response) {
 
 export function removeCard(request: Request, response: Response) {
   return Card.findByIdAndDelete(request.params.cardId).then(
-    () => response.status(204).send(
-      {}
-    )
+    (card) => {
+      if (!card) {
+        return response.status(404).send(
+          { message: "Нет карточки с таким id" }
+        );
+      };
+      return response.status(204).send();
+    }
   ).catch(
-    () => response.status(500).send(
-      { message: "Произошла ошибка" }
+    (error) => response.status(500).send(
+      { message: error.message }
     )
   );
 };
@@ -58,12 +63,19 @@ export function likeCard(request: CustomRequest, response: Response) {
     { $addToSet: { likes: request.user?._id } },
     { new: true }
   ).then(
-    (card) => response.status(200).send(
-      { data: card }
-    )
+    (card) => {
+      if (!card) {
+        return response.status(404).send(
+          { message: "Нет карточки с таким id" }
+        );
+      };
+      return response.status(200).send(
+        { data: card }
+      );
+    }
   ).catch(
-    () => response.status(500).send(
-      { message: "Произошла ошибка" }
+    (error) => response.status(500).send(
+      { message: error.message }
     )
   );
 };
@@ -76,12 +88,19 @@ export function dislikeCard(request: CustomRequest, response: Response) {
     { $pull: { likes: request.user?._id } },
     { new: true }
   ).then(
-    (card) => response.status(200).send(
-      { data: card }
-    )
+    (card) => {
+      if (!card) {
+        return response.status(404).send(
+          { message: "Нет карточки с таким id" }
+        );
+      };
+      return response.status(200).send(
+        { data: card }
+      );
+    }
   ).catch(
-    () => response.status(500).send(
-      { message: "Произошла ошибка" }
+    (error) => response.status(500).send(
+      { message: error.message }
     )
   );
 };

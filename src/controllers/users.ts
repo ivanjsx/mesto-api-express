@@ -13,22 +13,8 @@ export function listUsers(request: Request, response: Response) {
       { data: users }
     )
   ).catch(
-    () => response.status(500).send(
-      { message: "Произошла ошибка" }
-    )
-  );
-};
-
-
-
-export function retrieveUser(request: Request, response: Response) {
-  return User.findById(request.params.userId).then(
-    (user) => response.status(200).send(
-      { data: user }
-    )
-  ).catch(
-    () => response.status(500).send(
-      { message: "Произошла ошибка" }
+    (error) => response.status(500).send(
+      { message: error.message }
     )
   );
 };
@@ -50,6 +36,34 @@ export function createUser(request: Request, response: Response) {
 
 
 
+export function retrieveUser(request: Request, response: Response) {
+  return User.findById(request.params.userId).then(
+    (user) => {
+      if (!user) {
+        return response.status(404).send(
+          { message: "Нет пользователя с таким id" }
+        );
+      };
+      return response.status(200).send(
+        { data: user }
+      );
+    }
+  ).catch(
+    (error) => {
+      if (error.name === "CastError") {
+        return response.status(400).send(
+          { message: "Невалидный id" }
+        );
+      };
+      return response.status(500).send(
+        { message: error.message }
+      );
+    }
+  );
+};
+
+
+
 export function updateUserInfo(request: CustomRequest, response: Response) {
   const { name, about } = request.body;
   return User.findByIdAndUpdate(
@@ -57,9 +71,16 @@ export function updateUserInfo(request: CustomRequest, response: Response) {
     { name, about },
     { new: true, runValidators: true }
   ).then(
-    (user) => response.status(200).send(
-      { data: user }
-    )
+    (user) => {
+      if (!user) {
+        return response.status(404).send(
+          { message: "Нет пользователя с таким id" }
+        );
+      };
+      return response.status(200).send(
+        { data: user }
+      );
+    }
   ).catch(
     (error) => response.status(400).send(
       { message: error.message }
@@ -76,9 +97,16 @@ export function updateUserAvatar(request: CustomRequest, response: Response) {
     { avatar },
     { new: true, runValidators: true }
   ).then(
-    (user) => response.status(200).send(
-      { data: user }
-    )
+    (user) => {
+      if (!user) {
+        return response.status(404).send(
+          { message: "Нет пользователя с таким id" }
+        );
+      };
+      return response.status(200).send(
+        { data: user }
+      );
+    }
   ).catch(
     (error) => response.status(400).send(
       { message: error.message }
