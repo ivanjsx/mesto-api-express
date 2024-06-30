@@ -1,9 +1,9 @@
 import { Request } from "express";
 
-interface CustomRequestInterface extends Request {
+interface CustomRequest extends Request {
   user?: {
     _id: string
   }
 };
 
-export default CustomRequestInterface;
+export default CustomRequest;

@@ -67,7 +67,7 @@ export function retrieveUser(request: Request, response: Response) {
 export function updateUserInfo(request: CustomRequest, response: Response) {
   const { name, about } = request.body;
   return User.findByIdAndUpdate(
-    request.user?._id,
+    request.user!._id,
     { name, about },
     { new: true, runValidators: true }
   ).then(
@@ -93,7 +93,7 @@ export function updateUserInfo(request: CustomRequest, response: Response) {
 export function updateUserAvatar(request: CustomRequest, response: Response) {
   const { avatar } = request.body;
   return User.findByIdAndUpdate(
-    request.user?._id,
+    request.user!._id,
     { avatar },
     { new: true, runValidators: true }
   ).then(

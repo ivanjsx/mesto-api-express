@@ -25,7 +25,7 @@ export function listCards(request: Request, response: Response) {
 
 export function createCard(request: CustomRequest, response: Response) {
   const { name, link } = request.body;
-  return Card.create({ name, link, owner: request.user }).then(
+  return Card.create({ name, link, owner: request.user!._id }).then(
     (card) => response.status(201).send(
       { data: card }
     )
@@ -60,7 +60,7 @@ export function removeCard(request: Request, response: Response) {
 export function likeCard(request: CustomRequest, response: Response) {
   return Card.findByIdAndUpdate(
     request.params.cardId,
-    { $addToSet: { likes: request.user?._id } },
+    { $addToSet: { likes: request.user!._id } },
     { new: true }
   ).then(
     (card) => {
@@ -85,7 +85,7 @@ export function likeCard(request: CustomRequest, response: Response) {
 export function dislikeCard(request: CustomRequest, response: Response) {
   return Card.findByIdAndUpdate(
     request.params.cardId,
-    { $pull: { likes: request.user?._id } },
+    { $pull: { likes: request.user!._id } },
     { new: true }
   ).then(
     (card) => {
