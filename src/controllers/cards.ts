@@ -1,4 +1,5 @@
 // libraries
+import { ObjectId } from "mongodb";
 import { NextFunction, Request, Response } from "express";
 
 // models
@@ -44,16 +45,18 @@ function createCard(request: AuthenticatedRequest, response: Response, next: Nex
 
 
 function removeCard(request: AuthenticatedRequest, response: Response, next: NextFunction) {
-  return Card.findByIdAndDelete(request.params.cardId).then(
+  return Card.findById(request.params.cardId).then(
     (card) => {
       if (!card) {
         throw new NotFoundError(CARD_NOT_FOUND_MESSAGE);
       };
-      if (card.owner !== request.user) {
+      if (card.owner.toString() !== request.user!._id) {
         throw new ForbiddenError(CARD_OWNER_RESTRICTION_MESSAGE);
       };
-      return response.status(http.NO_CONTENT).send();
+      return Card.deleteOne({ _id: new ObjectId(request.params.cardId) });
     }
+  ).then(
+    () => response.status(http.NO_CONTENT).send()
   ).catch(next);
 };
 

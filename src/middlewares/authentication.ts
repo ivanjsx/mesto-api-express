@@ -25,9 +25,9 @@ const authentication = (request: AuthenticatedRequest, response: Response, next:
   };
 
   const token = authorization.replace("Bearer ", "");
-  let payload: JwtPayload | string;
+  let payload: JwtPayload;
   try {
-    payload = verify(token, JWT_SECRET);
+    payload = verify(token, JWT_SECRET) as JwtPayload;
   } catch (error) {
     return next(new UnauthenticatedError(DEFAULT_401_MESSAGE));
   };
