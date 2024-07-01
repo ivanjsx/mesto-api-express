@@ -60,10 +60,15 @@ export function removeCard(request: Request, response: Response) {
 
 
 
-export function likeCard(request: CustomRequest, response: Response) {
+export function likeCard(request: CustomRequest, response: Response, dislikeInstead: boolean = false) {
+  const query = dislikeInstead ? {
+    $pull: { likes: request.user!._id }
+  } : {
+    $addToSet: { likes: request.user!._id }
+  };
   return Card.findByIdAndUpdate(
     request.params.cardId,
-    { $addToSet: { likes: request.user!._id } },
+    query,
     { new: true }
   ).then(
     (card) => {
@@ -86,24 +91,5 @@ export function likeCard(request: CustomRequest, response: Response) {
 
 
 export function dislikeCard(request: CustomRequest, response: Response) {
-  return Card.findByIdAndUpdate(
-    request.params.cardId,
-    { $pull: { likes: request.user!._id } },
-    { new: true }
-  ).then(
-    (card) => {
-      if (!card) {
-        return response.status(NOT_FOUND).send(
-          { message: "Нет карточки с таким id" }
-        );
-      };
-      return response.status(OK).send(
-        { data: card }
-      );
-    }
-  ).catch(
-    () => response.status(INTERNAL_SERVER_ERROR).send(
-      { message: "на сервере произошла ошибка" }
-    )
-  );
+  return likeCard(request, response, true);
 };
