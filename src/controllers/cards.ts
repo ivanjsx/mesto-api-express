@@ -18,8 +18,8 @@ export function listCards(request: Request, response: Response) {
       { data: cards }
     )
   ).catch(
-    (error) => response.status(INTERNAL_SERVER_ERROR).send(
-      { message: error.message }
+    () => response.status(INTERNAL_SERVER_ERROR).send(
+      { message: "на сервере произошла ошибка"}
     )
   );
 };
@@ -52,8 +52,8 @@ export function removeCard(request: Request, response: Response) {
       return response.status(NO_CONTENT).send();
     }
   ).catch(
-    (error) => response.status(INTERNAL_SERVER_ERROR).send(
-      { message: error.message }
+    () => response.status(INTERNAL_SERVER_ERROR).send(
+      { message: "на сервере произошла ошибка" }
     )
   );
 };
@@ -77,8 +77,8 @@ export function likeCard(request: CustomRequest, response: Response) {
       );
     }
   ).catch(
-    (error) => response.status(INTERNAL_SERVER_ERROR).send(
-      { message: error.message }
+    () => response.status(INTERNAL_SERVER_ERROR).send(
+      { message: "на сервере произошла ошибка" }
     )
   );
 };
@@ -102,8 +102,8 @@ export function dislikeCard(request: CustomRequest, response: Response) {
       );
     }
   ).catch(
-    (error) => response.status(INTERNAL_SERVER_ERROR).send(
-      { message: error.message }
+    () => response.status(INTERNAL_SERVER_ERROR).send(
+      { message: "на сервере произошла ошибка" }
     )
   );
 };

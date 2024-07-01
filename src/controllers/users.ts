@@ -23,8 +23,8 @@ export function listUsers(request: Request, response: Response) {
       { data: users }
     )
   ).catch(
-    (error) => response.status(INTERNAL_SERVER_ERROR).send(
-      { message: error.message }
+    () => response.status(INTERNAL_SERVER_ERROR).send(
+      { message: "на сервере произошла ошибка" }
     )
   );
 };
@@ -89,7 +89,7 @@ export function retrieveUser(request: Request, response: Response) {
         );
       };
       return response.status(INTERNAL_SERVER_ERROR).send(
-        { message: error.message }
+        { message: "на сервере произошла ошибка" }
       );
     }
   );
