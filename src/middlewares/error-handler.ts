@@ -1,5 +1,5 @@
 // libraries
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 
 // interfaces
 import CustomError from "../interfaces/custom-error";
@@ -12,12 +12,13 @@ import { DEFAULT_500_MESSAGE } from "../utils/error-messages";
 
 
 
-const errorHandler = (error: CustomError, request: Request, response: Response) => {
+const errorHandler = (error: CustomError, request: Request, response: Response, next: NextFunction) => {
   const {
     statusCode = http.INTERNAL_SERVER_ERROR,
     message = DEFAULT_500_MESSAGE
   } = error;
-  return response.status(statusCode).send({ message });
+  response.status(statusCode).send({ message });
+  next();
 };
 
 export default errorHandler;
