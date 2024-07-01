@@ -1,5 +1,7 @@
+// libraries
 import { isURL } from "validator";
 
+// interfaces
 import ValidatorPropsInterface from "../interfaces/validator-props";
 
 

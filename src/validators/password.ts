@@ -4,7 +4,7 @@ import { isStrongPassword } from "validator";
 // options
 const minLength = 8;
 const minLowercase = 1;
-const minUppercase = 0;
+const minUppercase = 1;
 const minNumbers = 1;
 const minSymbols = 0;
 

@@ -5,7 +5,7 @@ import { Request, Response } from "express";
 import Card from "../models/card";
 
 // interfaces
-import CustomRequest from "../interfaces/custom-request";
+import AuthenticatedRequest from "../interfaces/authenticated-request";
 
 // http status codes
 import { BAD_REQUEST, CREATED, FORBIDDEN, INTERNAL_SERVER_ERROR, NO_CONTENT, NOT_FOUND, OK } from "../utils/http-status-codes";
@@ -26,7 +26,7 @@ function listCards(request: Request, response: Response) {
 
 
 
-function createCard(request: CustomRequest, response: Response) {
+function createCard(request: AuthenticatedRequest, response: Response) {
   const { name, link } = request.body;
   return Card.create({ name, link, owner: request.user }).then(
     (card) => response.status(CREATED).send(
@@ -41,7 +41,7 @@ function createCard(request: CustomRequest, response: Response) {
 
 
 
-function removeCard(request: CustomRequest, response: Response) {
+function removeCard(request: AuthenticatedRequest, response: Response) {
   return Card.findByIdAndDelete(request.params.cardId).then(
     (card) => {
       if (!card) {
@@ -65,7 +65,7 @@ function removeCard(request: CustomRequest, response: Response) {
 
 
 
-function toggleCardLikes(request: CustomRequest, response: Response, isDislike: boolean) {
+function toggleCardLikes(request: AuthenticatedRequest, response: Response, isDislike: boolean) {
   const query = isDislike ? {
     $pull: { likes: request.user }
   } : {
@@ -95,22 +95,22 @@ function toggleCardLikes(request: CustomRequest, response: Response, isDislike: 
 
 
 
-function likeCard(request: CustomRequest, response: Response) {
+function likeCard(request: AuthenticatedRequest, response: Response) {
   return toggleCardLikes(request, response, false);
 };
 
 
 
-function dislikeCard(request: CustomRequest, response: Response) {
+function dislikeCard(request: AuthenticatedRequest, response: Response) {
   return toggleCardLikes(request, response, true);
 };
 
 
 
 export {
+  likeCard,
   listCards,
   createCard,
   removeCard,
-  likeCard,
   dislikeCard
 };

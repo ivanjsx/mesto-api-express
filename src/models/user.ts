@@ -10,7 +10,7 @@ import urlValidator from "../validators/url";
 import emailValidator from "../validators/email";
 
 // constants
-import { MAX_ABOUT_LENGTH, MAX_NAME_LENGTH, MIN_ABOUT_LENGTH, MIN_NAME_LENGTH } from "../utils/constants";
+import { DEFAULT_ABOUT, DEFAULT_AVATAR, DEFAULT_NAME, MAX_ABOUT_LENGTH, MAX_NAME_LENGTH, MIN_ABOUT_LENGTH, MIN_NAME_LENGTH } from "../utils/constants";
 
 
 
@@ -22,21 +22,21 @@ const UserSchema = new Schema<UserInterface, UserModelInterface>({
   name: {
     type: String,
     required: false,
-    default: "Жак-Ив Кусто",
+    default: DEFAULT_NAME,
     minlength: MIN_NAME_LENGTH,
     maxlength: MAX_NAME_LENGTH
   },
   about: {
     type: String,
     required: false,
-    default: "Исследователь",
+    default: DEFAULT_ABOUT,
     minlength: MIN_ABOUT_LENGTH,
     maxlength: MAX_ABOUT_LENGTH
   },
   avatar: {
     type: String,
     required: false,
-    default: "https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png",
+    default: DEFAULT_AVATAR,
     validate: urlValidator
   },
   email: {

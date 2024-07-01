@@ -11,7 +11,7 @@ import cardsRoutes from "./routes/cards";
 import authentication from "./middlewares/authentication";
 
 // controllers
-import { createUser, login } from "./controllers/users";
+import { signIn, signUp } from "./controllers/users";
 
 
 
@@ -21,13 +21,13 @@ const { PORT = 3000, MONGODB_URI = "" } = process.env;
 
 const app = express();
 
-app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
 
 
-app.post("/signin", login);
-app.post("/signup", createUser);
+app.post("/signin", signIn);
+app.post("/signup", signUp);
 
 app.use(authentication);
 

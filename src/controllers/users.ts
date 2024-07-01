@@ -8,7 +8,7 @@ import User from "../models/user";
 
 // interfaces
 import UserInterface from "../interfaces/user";
-import CustomRequest from "../interfaces/custom-request";
+import AuthenticatedRequest from "../interfaces/authenticated-request";
 
 // validators
 import passwordValidator from "../validators/password";
@@ -35,7 +35,7 @@ function listUsers(request: Request, response: Response) {
 
 
 
-function createUser(request: Request, response: Response) {
+function signUp(request: Request, response: Response) {
   const { name, about, avatar, email, password } = request.body;
   if (!password) {
     return response.status(BAD_REQUEST).send(
@@ -66,7 +66,7 @@ function createUser(request: Request, response: Response) {
 
 
 
-function login(request: Request, response: Response) {
+function signIn(request: Request, response: Response) {
   const { email, password } = request.body;
   return User.findUserByCredentials(email, password).then(
     (user) => response.send({
@@ -85,7 +85,7 @@ function login(request: Request, response: Response) {
 
 
 
-function findUserById(request: CustomRequest, response: Response, fromParams: boolean) {
+function findUserById(request: AuthenticatedRequest, response: Response, fromParams: boolean) {
   const userId = fromParams ? request.params.userId : request.user;
   return User.findById(userId).then(
     (user) => {
@@ -120,13 +120,13 @@ function retrieveUser(request: Request, response: Response) {
 
 
 
-function getMe(request: CustomRequest, response: Response) {
+function getMe(request: AuthenticatedRequest, response: Response) {
   return findUserById(request, response, false);
 };
 
 
 
-function updateUserFields(request: CustomRequest, response: Response, fields: Partial<UserInterface>) {
+function updateUserFields(request: AuthenticatedRequest, response: Response, fields: Partial<UserInterface>) {
   return User.findByIdAndUpdate(
     request.user,
     fields,
@@ -151,14 +151,14 @@ function updateUserFields(request: CustomRequest, response: Response, fields: Pa
 
 
 
-function updateUserInfo(request: CustomRequest, response: Response) {
+function updateUserInfo(request: AuthenticatedRequest, response: Response) {
   const { name, about } = request.body;
   return updateUserFields(request, response, { name, about });
 };
 
 
 
-function updateUserAvatar(request: CustomRequest, response: Response) {
+function updateUserAvatar(request: AuthenticatedRequest, response: Response) {
   const { avatar } = request.body;
   return updateUserFields(request, response, { avatar });
 };
@@ -166,11 +166,11 @@ function updateUserAvatar(request: CustomRequest, response: Response) {
 
 
 export {
-  listUsers,
-  createUser,
-  login,
-  retrieveUser,
   getMe,
+  signIn,
+  signUp,
+  listUsers,
+  retrieveUser,
   updateUserInfo,
-  updateUserAvatar,
+  updateUserAvatar
 };

@@ -1,12 +1,14 @@
 // libraries
-import { verify, JwtPayload } from "jsonwebtoken";
 import { Response, NextFunction } from "express";
+import { verify, JwtPayload } from "jsonwebtoken";
 
 // interfaces
-import CustomRequest from "../interfaces/custom-request";
+import AuthenticatedRequest from "../interfaces/authenticated-request";
+
+// constants
+import { JWT_SECRET } from "../utils/constants";
 
 // http status codes
-import { JWT_SECRET } from "../utils/constants";
 import { UNAUTHORIZED } from "../utils/http-status-codes";
 
 
@@ -19,7 +21,7 @@ const handleAuthenticationError = (response: Response) => {
 
 
 
-const authentication = (request: CustomRequest, response: Response, next: NextFunction) => {
+const authentication = (request: AuthenticatedRequest, response: Response, next: NextFunction) => {
 
   const { authorization } = request.headers;
 

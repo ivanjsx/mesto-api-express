@@ -1,5 +1,7 @@
+// libraries
 import { isEmail } from "validator";
 
+// interfaces
 import ValidatorPropsInterface from "../interfaces/validator-props";
 
 
