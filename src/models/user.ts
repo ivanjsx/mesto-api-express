@@ -48,13 +48,14 @@ const UserSchema = new Schema<UserInterface, UserModelInterface>({
   },
   password: {
     type: String,
+    select: false,
     required: true
   }
 });
 
 UserSchema.static(
   "findUserByCredentials", function (email: string, password: string) {
-    return this.findOne({ email }).then(
+    return this.findOne({ email }).select("+password").then(
       (user) => {
         if (!user) {
           return Promise.reject(new Error("Неправильные почта или пароль"));
