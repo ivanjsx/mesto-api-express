@@ -8,6 +8,7 @@ import usersRoutes from "./routes/users";
 import cardsRoutes from "./routes/cards";
 
 // middlewares
+import errorHandler from "./middlewares/error-handler";
 import authentication from "./middlewares/authentication";
 
 // controllers
@@ -33,6 +34,8 @@ app.use(authentication);
 
 app.use("/users", usersRoutes);
 app.use("/cards", cardsRoutes);
+
+app.use(errorHandler);
 
 
 
