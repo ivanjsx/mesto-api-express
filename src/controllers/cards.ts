@@ -64,9 +64,9 @@ function removeCard(request: AuthenticatedRequest, response: Response, next: Nex
 
 function toggleCardLikes(request: AuthenticatedRequest, response: Response, next: NextFunction, isDislike: boolean) {
   const query = isDislike ? {
-    $pull: { likes: request.user }
+    $pull: { likes: request.user!._id }
   } : {
-    $addToSet: { likes: request.user }
+    $addToSet: { likes: request.user!._id }
   };
   return Card.findByIdAndUpdate(
     request.params.cardId,
