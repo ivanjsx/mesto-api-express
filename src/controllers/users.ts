@@ -7,7 +7,8 @@ import { Request, Response } from "express";
 import User from "../models/user";
 
 // interfaces
-import CustomRequest from "interfaces/custom-request";
+import UserInterface from "../interfaces/user";
+import CustomRequest from "../interfaces/custom-request";
 
 // constants
 import { JWT_SECRET } from "../utils/constants";
@@ -97,11 +98,10 @@ export function retrieveUser(request: Request, response: Response) {
 
 
 
-export function updateUserInfo(request: CustomRequest, response: Response) {
-  const { name, about } = request.body;
+export function updateUserFields(request: CustomRequest, response: Response, fields: Partial<UserInterface>) {
   return User.findByIdAndUpdate(
     request.user!._id,
-    { name, about },
+    fields,
     { new: true, runValidators: true }
   ).then(
     (user) => {
@@ -123,26 +123,14 @@ export function updateUserInfo(request: CustomRequest, response: Response) {
 
 
 
+export function updateUserInfo(request: CustomRequest, response: Response) {
+  const { name, about } = request.body;
+  return updateUserFields(request, response, { name, about });
+};
+
+
+
 export function updateUserAvatar(request: CustomRequest, response: Response) {
   const { avatar } = request.body;
-  return User.findByIdAndUpdate(
-    request.user!._id,
-    { avatar },
-    { new: true, runValidators: true }
-  ).then(
-    (user) => {
-      if (!user) {
-        return response.status(NOT_FOUND).send(
-          { message: "Нет пользователя с таким id" }
-        );
-      };
-      return response.status(OK).send(
-        { data: user }
-      );
-    }
-  ).catch(
-    (error) => response.status(BAD_REQUEST).send(
-      { message: error.message }
-    )
-  );
+  return updateUserFields(request, response, { avatar });
 };
