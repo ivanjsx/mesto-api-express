@@ -10,7 +10,18 @@ import urlValidator from "../validators/url";
 import emailValidator from "../validators/email";
 
 // constants
-import { DEFAULT_ABOUT, DEFAULT_AVATAR, DEFAULT_NAME, MAX_ABOUT_LENGTH, MAX_NAME_LENGTH, MIN_ABOUT_LENGTH, MIN_NAME_LENGTH } from "../utils/constants";
+import {
+  MIN_ABOUT_LENGTH,
+  MAX_ABOUT_LENGTH,
+  MIN_NAME_LENGTH,
+  MAX_NAME_LENGTH,
+  DEFAULT_AVATAR,
+  DEFAULT_ABOUT,
+  DEFAULT_NAME
+} from "../utils/constants";
+
+// error messages
+import { INCORRECT_CREDENTIALS_MESSAGE } from "../utils/error-messages";
 
 
 
@@ -58,12 +69,12 @@ UserSchema.static(
     return this.findOne({ email }).select("+password").then(
       (user) => {
         if (!user) {
-          return Promise.reject(new Error("Неправильные почта или пароль"));
+          return Promise.reject(new Error(INCORRECT_CREDENTIALS_MESSAGE));
         };
         return bcrypt.compare(password, user.password).then(
           (matched) => {
             if (!matched) {
-              return Promise.reject(new Error("Неправильные почта или пароль"));
+              return Promise.reject(new Error(INCORRECT_CREDENTIALS_MESSAGE));
             };
             return user;
           }

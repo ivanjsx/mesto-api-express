@@ -8,18 +8,25 @@ import Card from "../models/card";
 import AuthenticatedRequest from "../interfaces/authenticated-request";
 
 // http status codes
-import { BAD_REQUEST, CREATED, FORBIDDEN, INTERNAL_SERVER_ERROR, NO_CONTENT, NOT_FOUND, OK } from "../utils/http-status-codes";
+import http from "../utils/http-status-codes";
+
+// error messages
+import {
+  CARD_OWNER_RESTRICTION_MESSAGE,
+  CARD_NOT_FOUND_MESSAGE,
+  DEFAULT_500_MESSAGE
+} from "../utils/error-messages";
 
 
 
 function listCards(request: Request, response: Response) {
   return Card.find({}).then(
-    (cards) => response.status(OK).send(
+    (cards) => response.status(http.OK).send(
       { data: cards }
     )
   ).catch(
-    () => response.status(INTERNAL_SERVER_ERROR).send(
-      { message: "на сервере произошла ошибка"}
+    () => response.status(http.INTERNAL_SERVER_ERROR).send(
+      { message: DEFAULT_500_MESSAGE }
     )
   );
 };
@@ -29,11 +36,11 @@ function listCards(request: Request, response: Response) {
 function createCard(request: AuthenticatedRequest, response: Response) {
   const { name, link } = request.body;
   return Card.create({ name, link, owner: request.user }).then(
-    (card) => response.status(CREATED).send(
+    (card) => response.status(http.CREATED).send(
       { data: card }
     )
   ).catch(
-    (error) => response.status(BAD_REQUEST).send(
+    (error) => response.status(http.BAD_REQUEST).send(
       { message: error.message }
     )
   );
@@ -45,20 +52,20 @@ function removeCard(request: AuthenticatedRequest, response: Response) {
   return Card.findByIdAndDelete(request.params.cardId).then(
     (card) => {
       if (!card) {
-        return response.status(NOT_FOUND).send(
-          { message: "Нет карточки с таким id" }
+        return response.status(http.NOT_FOUND).send(
+          { message: CARD_NOT_FOUND_MESSAGE }
         );
       };
       if (card.owner !== request.user) {
-        return response.status(FORBIDDEN).send(
-          { message: "карточку может удалить только её владелец" }
+        return response.status(http.FORBIDDEN).send(
+          { message: CARD_OWNER_RESTRICTION_MESSAGE }
         );
       };
-      return response.status(NO_CONTENT).send();
+      return response.status(http.NO_CONTENT).send();
     }
   ).catch(
-    () => response.status(INTERNAL_SERVER_ERROR).send(
-      { message: "на сервере произошла ошибка" }
+    () => response.status(http.INTERNAL_SERVER_ERROR).send(
+      { message: DEFAULT_500_MESSAGE }
     )
   );
 };
@@ -78,17 +85,17 @@ function toggleCardLikes(request: AuthenticatedRequest, response: Response, isDi
   ).then(
     (card) => {
       if (!card) {
-        return response.status(NOT_FOUND).send(
-          { message: "Нет карточки с таким id" }
+        return response.status(http.NOT_FOUND).send(
+          { message: CARD_NOT_FOUND_MESSAGE }
         );
       };
-      return response.status(OK).send(
+      return response.status(http.OK).send(
         { data: card }
       );
     }
   ).catch(
-    () => response.status(INTERNAL_SERVER_ERROR).send(
-      { message: "на сервере произошла ошибка" }
+    () => response.status(http.INTERNAL_SERVER_ERROR).send(
+      { message: DEFAULT_500_MESSAGE }
     )
   );
 };

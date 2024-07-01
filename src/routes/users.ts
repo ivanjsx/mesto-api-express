@@ -2,7 +2,13 @@
 import { Router } from  "express";
 
 // controllers
-import { listUsers, retrieveUser, getMe, updateUserInfo, updateUserAvatar } from "../controllers/users";
+import {
+  updateUserAvatar,
+  updateUserInfo,
+  retrieveUser,
+  listUsers,
+  getMe
+} from "../controllers/users";
 
 
 

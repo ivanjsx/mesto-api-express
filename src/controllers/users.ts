@@ -17,18 +17,27 @@ import passwordValidator from "../validators/password";
 import { JWT_SECRET } from "../utils/constants";
 
 // http status codes
-import { BAD_REQUEST, CONFLICT, CREATED, INTERNAL_SERVER_ERROR, NOT_FOUND, OK, UNAUTHORIZED } from "../utils/http-status-codes";
+import http from "../utils/http-status-codes";
+
+// error messages
+import {
+  MISSING_CREDENTIALS_MESSAGE,
+  CONFLICTING_EMAIL_MESSAGE,
+  INVALID_USER_ID_MESSAGE,
+  USER_NOT_FOUND_MESSAGE,
+  DEFAULT_500_MESSAGE
+} from "../utils/error-messages";
 
 
 
 function listUsers(request: Request, response: Response) {
   return User.find({}).then(
-    (users) => response.status(OK).send(
+    (users) => response.status(http.OK).send(
       { data: users }
     )
   ).catch(
-    () => response.status(INTERNAL_SERVER_ERROR).send(
-      { message: "на сервере произошла ошибка" }
+    () => response.status(http.INTERNAL_SERVER_ERROR).send(
+      { message: DEFAULT_500_MESSAGE }
     )
   );
 };
@@ -38,12 +47,12 @@ function listUsers(request: Request, response: Response) {
 function signUp(request: Request, response: Response) {
   const { name, about, avatar, email, password } = request.body;
   if (!password) {
-    return response.status(BAD_REQUEST).send(
-      { message: "для регистрации необходимы email и пароль" }
+    return response.status(http.BAD_REQUEST).send(
+      { message: MISSING_CREDENTIALS_MESSAGE }
     );
   };
   if (!passwordValidator.validator(password)) {
-    return response.status(BAD_REQUEST).send(
+    return response.status(http.BAD_REQUEST).send(
       { message: passwordValidator.getMessage() }
     );
   };
@@ -52,13 +61,13 @@ function signUp(request: Request, response: Response) {
       { name, about, avatar, email, password: hash }
     )
   ).then(
-    (user) => response.status(CREATED).send(
+    (user) => response.status(http.CREATED).send(
       { data: user }
     )
   ).catch(
-    (error) => error.code === 11000 ? response.status(CONFLICT).send(
-      { message: "пользователь с таким email уже существует" }
-    ) : response.status(BAD_REQUEST).send(
+    (error) => error.code === 11000 ? response.status(http.CONFLICT).send(
+      { message: CONFLICTING_EMAIL_MESSAGE }
+    ) : response.status(http.BAD_REQUEST).send(
       { message: error.message }
     )
   );
@@ -77,7 +86,7 @@ function signIn(request: Request, response: Response) {
       ),
     })
   ).catch(
-    (error) => response.status(UNAUTHORIZED).send(
+    (error) => response.status(http.UNAUTHENTICATED).send(
       { message: error.message }
     )
   );
@@ -90,23 +99,23 @@ function findUserById(request: AuthenticatedRequest, response: Response, fromPar
   return User.findById(userId).then(
     (user) => {
       if (!user) {
-        return response.status(NOT_FOUND).send(
-          { message: "Нет пользователя с таким id" }
+        return response.status(http.NOT_FOUND).send(
+          { message: USER_NOT_FOUND_MESSAGE }
         );
       };
-      return response.status(OK).send(
+      return response.status(http.OK).send(
         { data: user }
       );
     }
   ).catch(
     (error) => {
       if (error.name === "CastError") {
-        return response.status(BAD_REQUEST).send(
-          { message: "Невалидный id" }
+        return response.status(http.BAD_REQUEST).send(
+          { message: INVALID_USER_ID_MESSAGE }
         );
       };
-      return response.status(INTERNAL_SERVER_ERROR).send(
-        { message: "на сервере произошла ошибка" }
+      return response.status(http.INTERNAL_SERVER_ERROR).send(
+        { message: DEFAULT_500_MESSAGE }
       );
     }
   );
@@ -134,16 +143,16 @@ function updateUserFields(request: AuthenticatedRequest, response: Response, fie
   ).then(
     (user) => {
       if (!user) {
-        return response.status(NOT_FOUND).send(
-          { message: "Нет пользователя с таким id" }
+        return response.status(http.NOT_FOUND).send(
+          { message: USER_NOT_FOUND_MESSAGE }
         );
       };
-      return response.status(OK).send(
+      return response.status(http.OK).send(
         { data: user }
       );
     }
   ).catch(
-    (error) => response.status(BAD_REQUEST).send(
+    (error) => response.status(http.BAD_REQUEST).send(
       { message: error.message }
     )
   );

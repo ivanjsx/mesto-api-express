@@ -9,13 +9,16 @@ import AuthenticatedRequest from "../interfaces/authenticated-request";
 import { JWT_SECRET } from "../utils/constants";
 
 // http status codes
-import { UNAUTHORIZED } from "../utils/http-status-codes";
+import http from "../utils/http-status-codes";
+
+// error messages
+import { DEFAULT_401_MESSAGE } from "../utils/error-messages";
 
 
 
 const handleAuthenticationError = (response: Response) => {
-  return response.status(UNAUTHORIZED).send(
-    { message: "Необходима авторизация" }
+  return response.status(http.UNAUTHENTICATED).send(
+    { message: DEFAULT_401_MESSAGE }
   );
 };
 
