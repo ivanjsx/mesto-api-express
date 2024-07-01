@@ -10,6 +10,9 @@ import User from "../models/user";
 import UserInterface from "../interfaces/user";
 import CustomRequest from "../interfaces/custom-request";
 
+// validators
+import passwordValidator from "../validators/password";
+
 // constants
 import { JWT_SECRET } from "../utils/constants";
 
@@ -34,6 +37,16 @@ function listUsers(request: Request, response: Response) {
 
 function createUser(request: Request, response: Response) {
   const { name, about, avatar, email, password } = request.body;
+  if (!password) {
+    return response.status(BAD_REQUEST).send(
+      { message: "для регистрации необходимы email и пароль" }
+    );
+  };
+  if (!passwordValidator.validator(password)) {
+    return response.status(BAD_REQUEST).send(
+      { message: passwordValidator.getMessage() }
+    );
+  };
   return bcrypt.hash(password, 10).then(
     (hash) => User.create(
       { name, about, avatar, email, password: hash }
@@ -44,7 +57,11 @@ function createUser(request: Request, response: Response) {
     )
   ).catch(
     (error) => response.status(BAD_REQUEST).send(
-      { message: error.message }
+      error.code === 11000 ? {
+        message: "пользователь с таким email уже существует"
+      } : {
+        message: error.message
+      }
     )
   );
 };
