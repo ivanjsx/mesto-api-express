@@ -8,7 +8,7 @@ import Card from "../models/card";
 import CustomRequest from "../interfaces/custom-request";
 
 // http status codes
-import { BAD_REQUEST, CREATED, INTERNAL_SERVER_ERROR, NO_CONTENT, NOT_FOUND, OK } from "../utils/http-status-codes";
+import { BAD_REQUEST, CREATED, FORBIDDEN, INTERNAL_SERVER_ERROR, NO_CONTENT, NOT_FOUND, OK } from "../utils/http-status-codes";
 
 
 
@@ -41,12 +41,17 @@ function createCard(request: CustomRequest, response: Response) {
 
 
 
-function removeCard(request: Request, response: Response) {
+function removeCard(request: CustomRequest, response: Response) {
   return Card.findByIdAndDelete(request.params.cardId).then(
     (card) => {
       if (!card) {
         return response.status(NOT_FOUND).send(
           { message: "Нет карточки с таким id" }
+        );
+      };
+      if (card.owner !== request.user) {
+        return response.status(FORBIDDEN).send(
+          { message: "карточку может удалить только её владелец" }
         );
       };
       return response.status(NO_CONTENT).send();
