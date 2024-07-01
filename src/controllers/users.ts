@@ -87,8 +87,9 @@ function login(request: Request, response: Response) {
 
 
 
-function retrieveUser(request: Request, response: Response) {
-  return User.findById(request.params.userId).then(
+function findUserById(request: CustomRequest, response: Response, fromParams: boolean) {
+  const userId = fromParams ? request.params.userId : request.user;
+  return User.findById(userId).then(
     (user) => {
       if (!user) {
         return response.status(NOT_FOUND).send(
@@ -111,6 +112,18 @@ function retrieveUser(request: Request, response: Response) {
       );
     }
   );
+};
+
+
+
+function retrieveUser(request: Request, response: Response) {
+  return findUserById(request, response, true);
+};
+
+
+
+function getMe(request: CustomRequest, response: Response) {
+  return findUserById(request, response, false);
 };
 
 
@@ -159,6 +172,7 @@ export {
   createUser,
   login,
   retrieveUser,
+  getMe,
   updateUserInfo,
   updateUserAvatar,
 };
