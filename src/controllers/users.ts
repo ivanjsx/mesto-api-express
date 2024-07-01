@@ -1,6 +1,6 @@
 // libraries
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+import { sign } from "jsonwebtoken";
 import { Request, Response } from "express";
 
 // models
@@ -17,7 +17,7 @@ import passwordValidator from "../validators/password";
 import { JWT_SECRET } from "../utils/constants";
 
 // http status codes
-import { BAD_REQUEST, CREATED, INTERNAL_SERVER_ERROR, NOT_FOUND, OK, UNAUTHORIZED } from "../utils/http-status-codes";
+import { BAD_REQUEST, CONFLICT, CREATED, INTERNAL_SERVER_ERROR, NOT_FOUND, OK, UNAUTHORIZED } from "../utils/http-status-codes";
 
 
 
@@ -56,12 +56,10 @@ function createUser(request: Request, response: Response) {
       { data: user }
     )
   ).catch(
-    (error) => response.status(BAD_REQUEST).send(
-      error.code === 11000 ? {
-        message: "пользователь с таким email уже существует"
-      } : {
-        message: error.message
-      }
+    (error) => error.code === 11000 ? response.status(CONFLICT).send(
+      { message: "пользователь с таким email уже существует" }
+    ) : response.status(BAD_REQUEST).send(
+      { message: error.message }
     )
   );
 };
@@ -72,7 +70,7 @@ function login(request: Request, response: Response) {
   const { email, password } = request.body;
   return User.findUserByCredentials(email, password).then(
     (user) => response.send({
-      token: jwt.sign(
+      token: sign(
         { _id: user._id },
         JWT_SECRET,
         { expiresIn: "7d" }
