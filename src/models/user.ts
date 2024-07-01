@@ -20,6 +20,9 @@ import {
   DEFAULT_NAME
 } from "../utils/constants";
 
+// errors
+import UnauthenticatedError from "../errors/unauthenticated";
+
 // error messages
 import { INCORRECT_CREDENTIALS_MESSAGE } from "../utils/error-messages";
 
@@ -69,12 +72,12 @@ UserSchema.static(
     return this.findOne({ email }).select("+password").then(
       (user) => {
         if (!user) {
-          return Promise.reject(new Error(INCORRECT_CREDENTIALS_MESSAGE));
+          return Promise.reject(new UnauthenticatedError(INCORRECT_CREDENTIALS_MESSAGE));
         };
         return bcrypt.compare(password, user.password).then(
           (matched) => {
             if (!matched) {
-              return Promise.reject(new Error(INCORRECT_CREDENTIALS_MESSAGE));
+              return Promise.reject(new UnauthenticatedError(INCORRECT_CREDENTIALS_MESSAGE));
             };
             return user;
           }

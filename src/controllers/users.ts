@@ -1,7 +1,7 @@
 // libraries
 import bcrypt from "bcryptjs";
 import { sign } from "jsonwebtoken";
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 
 // models
 import User from "../models/user";
@@ -19,42 +19,38 @@ import { JWT_SECRET } from "../utils/constants";
 // http status codes
 import http from "../utils/http-status-codes";
 
+// errors
+import ConflictError from "../errors/conflict";
+import NotFoundError from "../errors/not-found";
+import BadRequestError from "../errors/bad-request";
+
 // error messages
 import {
   MISSING_CREDENTIALS_MESSAGE,
   CONFLICTING_EMAIL_MESSAGE,
   INVALID_USER_ID_MESSAGE,
-  USER_NOT_FOUND_MESSAGE,
-  DEFAULT_500_MESSAGE
+  USER_NOT_FOUND_MESSAGE
 } from "../utils/error-messages";
 
 
 
-function listUsers(request: Request, response: Response) {
+function listUsers(request: Request, response: Response, next: NextFunction) {
   return User.find({}).then(
     (users) => response.status(http.OK).send(
       { data: users }
     )
-  ).catch(
-    () => response.status(http.INTERNAL_SERVER_ERROR).send(
-      { message: DEFAULT_500_MESSAGE }
-    )
-  );
+  ).catch(next);
 };
 
 
 
-function signUp(request: Request, response: Response) {
+function signUp(request: Request, response: Response, next: NextFunction) {
   const { name, about, avatar, email, password } = request.body;
   if (!password) {
-    return response.status(http.BAD_REQUEST).send(
-      { message: MISSING_CREDENTIALS_MESSAGE }
-    );
+    throw new BadRequestError(MISSING_CREDENTIALS_MESSAGE);
   };
   if (!passwordValidator.validator(password)) {
-    return response.status(http.BAD_REQUEST).send(
-      { message: passwordValidator.getMessage() }
-    );
+    throw new BadRequestError(passwordValidator.getMessage());
   };
   return bcrypt.hash(password, 10).then(
     (hash) => User.create(
@@ -65,77 +61,58 @@ function signUp(request: Request, response: Response) {
       { data: user }
     )
   ).catch(
-    (error) => error.code === 11000 ? response.status(http.CONFLICT).send(
-      { message: CONFLICTING_EMAIL_MESSAGE }
-    ) : response.status(http.BAD_REQUEST).send(
-      { message: error.message }
-    )
+    (error) => error.code === 11000 ? next(
+      new ConflictError(CONFLICTING_EMAIL_MESSAGE)
+    ) : next(error)
   );
 };
 
 
 
-function signIn(request: Request, response: Response) {
+function signIn(request: Request, response: Response, next: NextFunction) {
   const { email, password } = request.body;
   return User.findUserByCredentials(email, password).then(
     (user) => response.send({
-      token: sign(
-        { _id: user._id },
-        JWT_SECRET,
-        { expiresIn: "7d" }
-      ),
+      token: sign({ _id: user._id }, JWT_SECRET, { expiresIn: "7d" })
     })
-  ).catch(
-    (error) => response.status(http.UNAUTHENTICATED).send(
-      { message: error.message }
-    )
-  );
+  ).catch(next);
 };
 
 
 
-function findUserById(request: AuthenticatedRequest, response: Response, fromParams: boolean) {
+function findUserById(request: AuthenticatedRequest, response: Response, next: NextFunction, fromParams: boolean) {
   const userId = fromParams ? request.params.userId : request.user;
   return User.findById(userId).then(
     (user) => {
       if (!user) {
-        return response.status(http.NOT_FOUND).send(
-          { message: USER_NOT_FOUND_MESSAGE }
-        );
+        throw new NotFoundError(USER_NOT_FOUND_MESSAGE);
       };
       return response.status(http.OK).send(
         { data: user }
       );
     }
   ).catch(
-    (error) => {
-      if (error.name === "CastError") {
-        return response.status(http.BAD_REQUEST).send(
-          { message: INVALID_USER_ID_MESSAGE }
-        );
-      };
-      return response.status(http.INTERNAL_SERVER_ERROR).send(
-        { message: DEFAULT_500_MESSAGE }
-      );
-    }
+    (error) => error.name === "CastError" ? next(
+      new BadRequestError(INVALID_USER_ID_MESSAGE)
+    ) : next(error)
   );
 };
 
 
 
-function retrieveUser(request: Request, response: Response) {
-  return findUserById(request, response, true);
+function retrieveUser(request: Request, response: Response, next: NextFunction) {
+  return findUserById(request, response, next, true);
 };
 
 
 
-function getMe(request: AuthenticatedRequest, response: Response) {
-  return findUserById(request, response, false);
+function getMe(request: AuthenticatedRequest, response: Response, next: NextFunction) {
+  return findUserById(request, response, next, false);
 };
 
 
 
-function updateUserFields(request: AuthenticatedRequest, response: Response, fields: Partial<UserInterface>) {
+function updateUserFields(request: AuthenticatedRequest, response: Response, next: NextFunction, fields: Partial<UserInterface>) {
   return User.findByIdAndUpdate(
     request.user,
     fields,
@@ -143,33 +120,27 @@ function updateUserFields(request: AuthenticatedRequest, response: Response, fie
   ).then(
     (user) => {
       if (!user) {
-        return response.status(http.NOT_FOUND).send(
-          { message: USER_NOT_FOUND_MESSAGE }
-        );
+        throw new NotFoundError(USER_NOT_FOUND_MESSAGE);
       };
       return response.status(http.OK).send(
         { data: user }
       );
     }
-  ).catch(
-    (error) => response.status(http.BAD_REQUEST).send(
-      { message: error.message }
-    )
-  );
+  ).catch(next);
 };
 
 
 
-function updateUserInfo(request: AuthenticatedRequest, response: Response) {
+function updateUserInfo(request: AuthenticatedRequest, response: Response, next: NextFunction) {
   const { name, about } = request.body;
-  return updateUserFields(request, response, { name, about });
+  return updateUserFields(request, response, next, { name, about });
 };
 
 
 
-function updateUserAvatar(request: AuthenticatedRequest, response: Response) {
+function updateUserAvatar(request: AuthenticatedRequest, response: Response, next: NextFunction) {
   const { avatar } = request.body;
-  return updateUserFields(request, response, { avatar });
+  return updateUserFields(request, response, next, { avatar });
 };
 
 
