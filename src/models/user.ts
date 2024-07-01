@@ -8,18 +8,17 @@ import UserInterface from "../interfaces/user";
 // validators
 import urlValidator from "../validators/url";
 import emailValidator from "../validators/email";
-import passwordValidator from "../validators/password";
 
 // constants
 import { MAX_ABOUT_LENGTH, MAX_NAME_LENGTH, MIN_ABOUT_LENGTH, MIN_NAME_LENGTH } from "../utils/constants";
 
 
 
-interface UserModel extends Model<UserInterface> {
+interface UserModelInterface extends Model<UserInterface> {
   findUserByCredentials: (email: string, password: string) => Promise<Document<unknown, object, UserInterface>>
 };
 
-const UserSchema = new Schema<UserInterface, UserModel>({
+const UserSchema = new Schema<UserInterface, UserModelInterface>({
   name: {
     type: String,
     required: false,
@@ -41,6 +40,7 @@ const UserSchema = new Schema<UserInterface, UserModel>({
     validate: urlValidator
   },
   email: {
+    index: true,
     type: String,
     unique: true,
     required: true,
@@ -48,8 +48,7 @@ const UserSchema = new Schema<UserInterface, UserModel>({
   },
   password: {
     type: String,
-    required: true,
-    validate: passwordValidator
+    required: true
   }
 });
 
@@ -73,4 +72,6 @@ UserSchema.static(
   }
 );
 
-export default model<UserInterface, UserModel>("user", UserSchema);
+const UserModel = model<UserInterface, UserModelInterface>("user", UserSchema);
+
+export default UserModel;
