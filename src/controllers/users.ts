@@ -18,7 +18,7 @@ import { BAD_REQUEST, CREATED, INTERNAL_SERVER_ERROR, NOT_FOUND, OK, UNAUTHORIZE
 
 
 
-export function listUsers(request: Request, response: Response) {
+function listUsers(request: Request, response: Response) {
   return User.find({}).then(
     (users) => response.status(OK).send(
       { data: users }
@@ -32,7 +32,7 @@ export function listUsers(request: Request, response: Response) {
 
 
 
-export function createUser(request: Request, response: Response) {
+function createUser(request: Request, response: Response) {
   const { name, about, avatar, email, password } = request.body;
   return bcrypt.hash(password, 10).then(
     (hash) => User.create(
@@ -51,7 +51,7 @@ export function createUser(request: Request, response: Response) {
 
 
 
-export function login(request: Request, response: Response) {
+function login(request: Request, response: Response) {
   const { email, password } = request.body;
   return User.findUserByCredentials(email, password).then(
     (user) => response.send({
@@ -70,7 +70,7 @@ export function login(request: Request, response: Response) {
 
 
 
-export function retrieveUser(request: Request, response: Response) {
+function retrieveUser(request: Request, response: Response) {
   return User.findById(request.params.userId).then(
     (user) => {
       if (!user) {
@@ -98,7 +98,7 @@ export function retrieveUser(request: Request, response: Response) {
 
 
 
-export function updateUserFields(request: CustomRequest, response: Response, fields: Partial<UserInterface>) {
+function updateUserFields(request: CustomRequest, response: Response, fields: Partial<UserInterface>) {
   return User.findByIdAndUpdate(
     request.user!._id,
     fields,
@@ -123,14 +123,25 @@ export function updateUserFields(request: CustomRequest, response: Response, fie
 
 
 
-export function updateUserInfo(request: CustomRequest, response: Response) {
+function updateUserInfo(request: CustomRequest, response: Response) {
   const { name, about } = request.body;
   return updateUserFields(request, response, { name, about });
 };
 
 
 
-export function updateUserAvatar(request: CustomRequest, response: Response) {
+function updateUserAvatar(request: CustomRequest, response: Response) {
   const { avatar } = request.body;
   return updateUserFields(request, response, { avatar });
+};
+
+
+
+export {
+  listUsers,
+  createUser,
+  login,
+  retrieveUser,
+  updateUserInfo,
+  updateUserAvatar,
 };

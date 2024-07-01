@@ -12,7 +12,7 @@ import { BAD_REQUEST, CREATED, INTERNAL_SERVER_ERROR, NO_CONTENT, NOT_FOUND, OK 
 
 
 
-export function listCards(request: Request, response: Response) {
+function listCards(request: Request, response: Response) {
   return Card.find({}).then(
     (cards) => response.status(OK).send(
       { data: cards }
@@ -26,7 +26,7 @@ export function listCards(request: Request, response: Response) {
 
 
 
-export function createCard(request: CustomRequest, response: Response) {
+function createCard(request: CustomRequest, response: Response) {
   const { name, link } = request.body;
   return Card.create({ name, link, owner: request.user!._id }).then(
     (card) => response.status(CREATED).send(
@@ -41,7 +41,7 @@ export function createCard(request: CustomRequest, response: Response) {
 
 
 
-export function removeCard(request: Request, response: Response) {
+function removeCard(request: Request, response: Response) {
   return Card.findByIdAndDelete(request.params.cardId).then(
     (card) => {
       if (!card) {
@@ -60,8 +60,8 @@ export function removeCard(request: Request, response: Response) {
 
 
 
-export function likeCard(request: CustomRequest, response: Response, dislikeInstead: boolean = false) {
-  const query = dislikeInstead ? {
+function toggleCardLikes(request: CustomRequest, response: Response, isDislike: boolean) {
+  const query = isDislike ? {
     $pull: { likes: request.user!._id }
   } : {
     $addToSet: { likes: request.user!._id }
@@ -90,6 +90,22 @@ export function likeCard(request: CustomRequest, response: Response, dislikeInst
 
 
 
-export function dislikeCard(request: CustomRequest, response: Response) {
-  return likeCard(request, response, true);
+function likeCard(request: CustomRequest, response: Response) {
+  return toggleCardLikes(request, response, false);
+};
+
+
+
+function dislikeCard(request: CustomRequest, response: Response) {
+  return toggleCardLikes(request, response, true);
+};
+
+
+
+export {
+  listCards,
+  createCard,
+  removeCard,
+  likeCard,
+  dislikeCard
 };
