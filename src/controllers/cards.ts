@@ -28,7 +28,7 @@ function listCards(request: Request, response: Response) {
 
 function createCard(request: CustomRequest, response: Response) {
   const { name, link } = request.body;
-  return Card.create({ name, link, owner: request.user!._id }).then(
+  return Card.create({ name, link, owner: request.user }).then(
     (card) => response.status(CREATED).send(
       { data: card }
     )
@@ -62,9 +62,9 @@ function removeCard(request: Request, response: Response) {
 
 function toggleCardLikes(request: CustomRequest, response: Response, isDislike: boolean) {
   const query = isDislike ? {
-    $pull: { likes: request.user!._id }
+    $pull: { likes: request.user }
   } : {
-    $addToSet: { likes: request.user!._id }
+    $addToSet: { likes: request.user }
   };
   return Card.findByIdAndUpdate(
     request.params.cardId,

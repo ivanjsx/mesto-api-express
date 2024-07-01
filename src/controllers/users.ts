@@ -117,7 +117,7 @@ function retrieveUser(request: Request, response: Response) {
 
 function updateUserFields(request: CustomRequest, response: Response, fields: Partial<UserInterface>) {
   return User.findByIdAndUpdate(
-    request.user!._id,
+    request.user,
     fields,
     { new: true, runValidators: true }
   ).then(

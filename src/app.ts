@@ -8,7 +8,7 @@ import usersRoutes from "./routes/users";
 import cardsRoutes from "./routes/cards";
 
 // middlewares
-import userThumbnail from "./middlewares/user-thumbnail";
+import authentication from "./middlewares/authentication";
 
 // controllers
 import { createUser, login } from "./controllers/users";
@@ -23,13 +23,18 @@ const app = express();
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-app.use(userThumbnail);
+
+
+
+app.post("/signin", login);
+app.post("/signup", createUser);
+
+app.use(authentication);
 
 app.use("/users", usersRoutes);
 app.use("/cards", cardsRoutes);
 
-app.post("/signin", login);
-app.post("/signup", createUser);
+
 
 mongoose.connect(MONGODB_URI).then(
   () => console.log("Connected to MongoDB")
