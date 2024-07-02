@@ -12,6 +12,7 @@ import cardsRoutes from "./routes/cards";
 // middlewares
 import errorHandler from "./middlewares/error-handler";
 import authentication from "./middlewares/authentication";
+import { requestLogger, errorLogger } from "./middlewares/logger";
 
 // request body validators
 import signUpValidator from "./validators/request-body/sign-up";
@@ -33,6 +34,8 @@ app.use(express.json());
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: false }));
 
+app.use(requestLogger);
+
 app.post("/signup", signUpValidator, signUp);
 app.post("/signin", signInValidator, signIn);
 
@@ -40,6 +43,8 @@ app.use(authentication);
 
 app.use("/users", usersRoutes);
 app.use("/cards", cardsRoutes);
+
+app.use(errorLogger);
 
 app.use(errors());
 app.use(errorHandler);
