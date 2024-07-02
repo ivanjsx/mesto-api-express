@@ -13,6 +13,11 @@ import cardsRoutes from "./routes/cards";
 import errorHandler from "./middlewares/error-handler";
 import authentication from "./middlewares/authentication";
 
+// request body validators
+import signUpValidator from "./validators/request-body/sign-up";
+import signInValidator from "./validators/request-body/sign-in";
+
+
 // controllers
 import { signIn, signUp } from "./controllers/users";
 
@@ -28,10 +33,8 @@ app.use(express.json());
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: false }));
 
-
-
-app.post("/signin", signIn);
-app.post("/signup", signUp);
+app.post("/signup", signUpValidator, signUp);
+app.post("/signin", signInValidator, signIn);
 
 app.use(authentication);
 
