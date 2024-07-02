@@ -26,7 +26,6 @@ import BadRequestError from "../errors/bad-request";
 
 // error messages
 import {
-  MISSING_CREDENTIALS_MESSAGE,
   CONFLICTING_EMAIL_MESSAGE,
   INVALID_USER_ID_MESSAGE,
   USER_NOT_FOUND_MESSAGE
@@ -46,9 +45,6 @@ function listUsers(request: Request, response: Response, next: NextFunction) {
 
 function signUp(request: Request, response: Response, next: NextFunction) {
   const { name, about, avatar, email, password } = request.body;
-  if (!password) {
-    throw new BadRequestError(MISSING_CREDENTIALS_MESSAGE);
-  };
   if (!passwordValidator.validator(password)) {
     throw new BadRequestError(passwordValidator.getMessage());
   };
