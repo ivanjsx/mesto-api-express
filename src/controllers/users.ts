@@ -122,7 +122,11 @@ function updateUserFields(request: AuthenticatedRequest, response: Response, nex
         { data: user }
       );
     }
-  ).catch(next);
+  ).catch(
+    (error) => error.name === "CastError" ? next(
+      new BadRequestError(INVALID_USER_ID_MESSAGE)
+    ) : next(error)    
+  );
 };
 
 
