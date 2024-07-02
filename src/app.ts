@@ -2,6 +2,8 @@
 import dotenv from "dotenv";
 import express from "express";
 import mongoose from "mongoose";
+import { errors } from "celebrate";
+import bodyParser from "body-parser";
 
 // routes
 import usersRoutes from "./routes/users";
@@ -23,6 +25,7 @@ const { PORT = 3000, MONGODB_URI = "" } = process.env;
 const app = express();
 
 app.use(express.json());
+app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: false }));
 
 
@@ -35,6 +38,7 @@ app.use(authentication);
 app.use("/users", usersRoutes);
 app.use("/cards", cardsRoutes);
 
+app.use(errors());
 app.use(errorHandler);
 
 
