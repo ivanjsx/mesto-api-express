@@ -131,14 +131,14 @@ function updateUserFields(request: AuthenticatedRequest, response: Response, nex
 
 
 
-function updateUserInfo(request: AuthenticatedRequest, response: Response, next: NextFunction) {
+function updateInfo(request: AuthenticatedRequest, response: Response, next: NextFunction) {
   const { name, about } = request.body;
   return updateUserFields(request, response, next, { name, about });
 };
 
 
 
-function updateUserAvatar(request: AuthenticatedRequest, response: Response, next: NextFunction) {
+function updateAvatar(request: AuthenticatedRequest, response: Response, next: NextFunction) {
   const { avatar } = request.body;
   return updateUserFields(request, response, next, { avatar });
 };
@@ -150,7 +150,7 @@ export {
   signIn,
   signUp,
   listUsers,
-  retrieveUser,
-  updateUserInfo,
-  updateUserAvatar
+  updateInfo,
+  updateAvatar,
+  retrieveUser
 };

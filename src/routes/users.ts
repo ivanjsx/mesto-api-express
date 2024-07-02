@@ -3,9 +3,9 @@ import { Router } from  "express";
 
 // controllers
 import {
-  updateUserAvatar,
-  updateUserInfo,
   retrieveUser,
+  updateAvatar,
+  updateInfo,
   listUsers,
   getMe
 } from "../controllers/users";
@@ -15,8 +15,8 @@ import {
 const router = Router();
 
 router.get("/me", getMe);
-router.patch("/me", updateUserInfo);
-router.patch("/me/avatar", updateUserAvatar);
+router.patch("/me", updateInfo);
+router.patch("/me/avatar", updateAvatar);
 
 router.get("/", listUsers);
 router.get("/:userId", retrieveUser);

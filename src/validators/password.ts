@@ -1,8 +1,11 @@
 // libraries
 import { isStrongPassword } from "validator";
 
+// constants
+import { MIN_PASSWORD_LENGTH } from "../utils/constants";
+
 // options
-const minLength = 8;
+const minLength = MIN_PASSWORD_LENGTH;
 const minLowercase = 1;
 const minUppercase = 1;
 const minNumbers = 1;
