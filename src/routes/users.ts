@@ -6,7 +6,7 @@ import updateInfoValidator from "../validators/request-body/update-info";
 import updateAvatarValidator from "../validators/request-body/update-avatar";
 
 // request params validators
-import userIdParamValidator from "../validators/request-params/user-id";
+import userIdValidator from "../validators/request-params/user-id";
 
 // controllers
 import {
@@ -27,8 +27,6 @@ router.patch("/me/avatar", updateAvatarValidator, updateAvatar);
 
 router.get("/", listUsers);
 
-router.use(userIdParamValidator);
-
-router.get("/:userId", retrieveUser);
+router.get("/:userId", userIdValidator, retrieveUser);
 
 export default router;

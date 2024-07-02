@@ -5,7 +5,7 @@ import { Router } from  "express";
 import createCardValidator from "../validators/request-body/create-card";
 
 // request params validators
-import cardIdParamValidator from "../validators/request-params/card-id";
+import cardIdValidator from "../validators/request-params/card-id";
 
 // controllers
 import {
@@ -23,11 +23,9 @@ const router = Router();
 router.get("/", listCards);
 router.post("/", createCardValidator, createCard);
 
-router.use(cardIdParamValidator);
+router.delete("/:cardId", cardIdValidator, removeCard);
 
-router.delete("/:cardId", removeCard);
-
-router.put("/:cardId/likes", likeCard);
-router.delete("/:cardId/likes", dislikeCard);
+router.put("/:cardId/likes", cardIdValidator, likeCard);
+router.delete("/:cardId/likes", cardIdValidator, dislikeCard);
 
 export default router;
