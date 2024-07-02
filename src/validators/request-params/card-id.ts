@@ -3,10 +3,10 @@ import { celebrate, Joi, Segments } from "celebrate";
 
 
 
-const cardIdParamValidator = celebrate({
+const cardIdValidator = celebrate({
   [Segments.PARAMS]: Joi.object().keys({
     cardId: Joi.string().required().alphanum().length(24)
   })
 });
 
-export default cardIdParamValidator;
+export default cardIdValidator;

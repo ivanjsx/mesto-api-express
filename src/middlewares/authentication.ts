@@ -17,21 +17,22 @@ import { DEFAULT_401_MESSAGE } from "../utils/error-messages";
 
 
 const authentication = (request: AuthenticatedRequest, response: Response, next: NextFunction) => {
-
+  
   const { authorization } = request.headers;
-
+  
   if (!authorization || !authorization.startsWith("Bearer ")) {
     return next(new UnauthenticatedError(DEFAULT_401_MESSAGE));
   };
-
+  
   const token = authorization.replace("Bearer ", "");
   let payload: JwtPayload;
+  
   try {
     payload = verify(token, JWT_SECRET) as JwtPayload;
   } catch (error) {
     return next(new UnauthenticatedError(DEFAULT_401_MESSAGE));
   };
-
+  
   request.user = payload;
   next();
 };
