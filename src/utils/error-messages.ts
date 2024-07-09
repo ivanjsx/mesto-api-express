@@ -1,4 +1,5 @@
 export const DEFAULT_401_MESSAGE  = "authentication required";
+export const DEFAULT_404_MESSAGE  = "resource not found";
 export const DEFAULT_500_MESSAGE  = "server encountered an internal error";
 
 export const USER_NOT_FOUND_MESSAGE = "user does not exist";

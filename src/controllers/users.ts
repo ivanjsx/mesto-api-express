@@ -1,6 +1,6 @@
 // libraries
 import bcrypt from "bcryptjs";
-import { sign } from "jsonwebtoken";
+import { Secret, sign } from "jsonwebtoken";
 import { NextFunction, Request, Response } from "express";
 
 // models
@@ -13,8 +13,8 @@ import AuthenticatedRequest from "../interfaces/authenticated-request";
 // validators
 import passwordValidator from "../validators/password";
 
-// constants
-import { JWT_SECRET } from "../utils/constants";
+// helpers
+import escapeFields from "../utils/escape-fields";
 
 // http status codes
 import http from "../utils/http-status-codes";
@@ -44,7 +44,7 @@ function listUsers(request: Request, response: Response, next: NextFunction) {
 
 
 function signUp(request: Request, response: Response, next: NextFunction) {
-  const { name, about, avatar, email, password } = request.body;
+  const { name, about, avatar, email, password } = escapeFields(request.body);
   if (!passwordValidator.validator(password)) {
     throw new BadRequestError(passwordValidator.getMessage());
   };
@@ -53,9 +53,12 @@ function signUp(request: Request, response: Response, next: NextFunction) {
       { name, about, avatar, email, password: hash }
     )
   ).then(
-    (user) => response.status(http.CREATED).send(
-      { data: user }
-    )
+    (user) => {
+      const { _id, name, about, avatar, email } = user;
+      return response.status(http.CREATED).send(
+        { data: { _id, name, about, avatar, email } }
+      )
+    }
   ).catch(
     (error) => error.code === 11000 ? next(
       new ConflictError(CONFLICTING_EMAIL_MESSAGE)
@@ -65,12 +68,19 @@ function signUp(request: Request, response: Response, next: NextFunction) {
 
 
 
-function signIn(request: Request, response: Response, next: NextFunction) {
-  const { email, password } = request.body;
+const signIn = (jwtSecretKey: Secret, tokenCookieName: string) => function (request: Request, response: Response, next: NextFunction) {
+  const { email, password } = escapeFields(request.body);
   return User.findUserByCredentials(email, password).then(
-    (user) => response.send({
-      token: sign({ _id: user._id }, JWT_SECRET, { expiresIn: "7d" })
-    })
+    (user) => {
+      const token = sign({ _id: user._id }, jwtSecretKey, { expiresIn: "7d" });
+      return response.cookie(
+        tokenCookieName, `Bearer ${token}`, {
+          maxAge: 1000 * 60 * 60 * 24 * 7,
+          httpOnly: true,
+          sameSite: true
+        }
+      ).end();
+    }
   ).catch(next);
 };
 
@@ -132,14 +142,14 @@ function updateUserFields(request: AuthenticatedRequest, response: Response, nex
 
 
 function updateInfo(request: AuthenticatedRequest, response: Response, next: NextFunction) {
-  const { name, about } = request.body;
+  const { name, about } = escapeFields(request.body);
   return updateUserFields(request, response, next, { name, about });
 };
 
 
 
 function updateAvatar(request: AuthenticatedRequest, response: Response, next: NextFunction) {
-  const { avatar } = request.body;
+  const { avatar } = escapeFields(request.body);
   return updateUserFields(request, response, next, { avatar });
 };
 

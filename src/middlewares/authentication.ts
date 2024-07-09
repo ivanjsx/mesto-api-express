@@ -1,12 +1,9 @@
 // libraries
 import { Response, NextFunction } from "express";
-import { verify, JwtPayload } from "jsonwebtoken";
+import { verify, JwtPayload, Secret } from "jsonwebtoken";
 
 // interfaces
 import AuthenticatedRequest from "../interfaces/authenticated-request";
-
-// constants
-import { JWT_SECRET } from "../utils/constants";
 
 // errors
 import UnauthenticatedError from "../errors/unauthenticated";
@@ -16,19 +13,23 @@ import { DEFAULT_401_MESSAGE } from "../utils/error-messages";
 
 
 
-const authentication = (request: AuthenticatedRequest, response: Response, next: NextFunction) => {
+const authentication = (jwtSecretKey: Secret, tokenCookieName: string) => (request: AuthenticatedRequest, response: Response, next: NextFunction) => {
   
-  const { authorization } = request.headers;
-  
-  if (!authorization || !authorization.startsWith("Bearer ")) {
+  if (!request.cookies) {
     return next(new UnauthenticatedError(DEFAULT_401_MESSAGE));
   };
   
-  const token = authorization.replace("Bearer ", "");
+  const cookie = request.cookies[tokenCookieName];
+  
+  if (!cookie || !cookie.startsWith("Bearer ")) {
+    return next(new UnauthenticatedError(DEFAULT_401_MESSAGE));
+  };
+  
+  const token = cookie.replace("Bearer ", "");
   let payload: JwtPayload;
   
   try {
-    payload = verify(token, JWT_SECRET) as JwtPayload;
+    payload = verify(token, jwtSecretKey) as JwtPayload;
   } catch (error) {
     return next(new UnauthenticatedError(DEFAULT_401_MESSAGE));
   };

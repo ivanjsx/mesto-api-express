@@ -8,6 +8,9 @@ import Card from "../models/card";
 // interfaces
 import AuthenticatedRequest from "../interfaces/authenticated-request";
 
+// helpers
+import escapeFields from "../utils/escape-fields";
+
 // http status codes
 import http from "../utils/http-status-codes";
 
@@ -34,7 +37,7 @@ function listCards(request: Request, response: Response, next: NextFunction) {
 
 
 function createCard(request: AuthenticatedRequest, response: Response, next: NextFunction) {
-  const { name, link } = request.body;
+  const { name, link } = escapeFields(request.body);
   return Card.create({ name, link, owner: request.user }).then(
     (card) => response.status(http.CREATED).send(
       { data: card }
