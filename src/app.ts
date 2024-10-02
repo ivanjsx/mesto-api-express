@@ -14,16 +14,16 @@ import cardsRoutes from "./routes/cards";
 // middlewares
 import rateLimiter from "./middlewares/rate-limiter";
 import errorHandler from "./middlewares/error-handler";
-import authentication from "./middlewares/authentication";
 import { requestLogger, errorLogger } from "./middlewares/logger";
 import throwNotFoundError from "./middlewares/throw-not-found-error";
+import createAuthenticationMiddleware from "./middlewares/authentication";
 
 // request body validators
 import signUpValidator from "./validators/request-body/sign-up";
 import signInValidator from "./validators/request-body/sign-in";
 
 // controllers
-import { signIn, signUp } from "./controllers/users";
+import { createSignInController, signUp } from "./controllers/users";
 
 
 
@@ -50,10 +50,12 @@ app.use(rateLimiter);
 
 app.use(requestLogger);
 
+const signIn = createSignInController(JWT_SECRET_KEY, TOKEN_COOKIE_NAME)
 app.post("/signup", signUpValidator, signUp);
-app.post("/signin", signInValidator, signIn(JWT_SECRET_KEY, TOKEN_COOKIE_NAME));
+app.post("/signin", signInValidator, signIn);
 
-app.use(authentication(JWT_SECRET_KEY, TOKEN_COOKIE_NAME));
+const authentication = createAuthenticationMiddleware(JWT_SECRET_KEY, TOKEN_COOKIE_NAME);
+app.use(authentication);
 
 app.use("/users", usersRoutes);
 app.use("/cards", cardsRoutes);

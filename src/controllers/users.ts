@@ -68,7 +68,7 @@ function signUp(request: Request, response: Response, next: NextFunction) {
 
 
 
-const signIn = (jwtSecretKey: Secret, tokenCookieName: string) => function (request: Request, response: Response, next: NextFunction) {
+const createSignInController = (jwtSecretKey: Secret, tokenCookieName: string) => function (request: Request, response: Response, next: NextFunction) {
   const { email, password } = escapeFields(request.body);
   return User.findUserByCredentials(email, password).then(
     (user) => {
@@ -157,10 +157,10 @@ function updateAvatar(request: AuthenticatedRequest, response: Response, next: N
 
 export {
   getMe,
-  signIn,
   signUp,
   listUsers,
   updateInfo,
   updateAvatar,
-  retrieveUser
+  retrieveUser,
+  createSignInController,
 };

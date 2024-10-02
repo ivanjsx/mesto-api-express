@@ -13,7 +13,7 @@ import { DEFAULT_401_MESSAGE } from "../utils/error-messages";
 
 
 
-const authentication = (jwtSecretKey: Secret, tokenCookieName: string) => (request: AuthenticatedRequest, response: Response, next: NextFunction) => {
+const createAuthenticationMiddleware = (jwtSecretKey: Secret, tokenCookieName: string) => (request: AuthenticatedRequest, response: Response, next: NextFunction) => {
   
   if (!request.cookies) {
     return next(new UnauthenticatedError(DEFAULT_401_MESSAGE));
@@ -38,4 +38,4 @@ const authentication = (jwtSecretKey: Secret, tokenCookieName: string) => (reque
   next();
 };
 
-export default authentication;
+export default createAuthenticationMiddleware;
