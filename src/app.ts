@@ -1,5 +1,5 @@
 // libraries
-import dotenv from "dotenv";
+import cors from "cors";
 import helmet from "helmet";
 import express from "express";
 import mongoose from "mongoose";
@@ -25,21 +25,22 @@ import signInValidator from "./validators/request-body/sign-in";
 // controllers
 import { createSignInController, signUp } from "./controllers/users";
 
-
-
-dotenv.config();
-
-const { 
-  PORT = 3000,
-  TOKEN_COOKIE_NAME = "jwt",
-  MONGODB_URI = "mongodb://localhost:27017/mestodb",
-  JWT_SECRET_KEY = "yes-i-do-masturbate-to-my-own-code",
-} = process.env;
+// constants
+import { MONGODB_URI, PORT, JWT_SECRET_KEY, TOKEN_COOKIE_NAME, APP_CORS_ORIGIN } from "./config";
 
 
 
 const app = express();
 
+mongoose.connect(MONGODB_URI).then(
+  () => console.log("Connected to MongoDB")
+).catch(
+  error => console.error("Failed to connect to MongoDB", error)
+);
+
+
+
+app.use(cors({ origin: APP_CORS_ORIGIN }));
 app.use(express.json());
 app.use(cookieParser());
 app.use(bodyParser.json());
@@ -66,14 +67,6 @@ app.use(errorLogger);
 
 app.use(errors());
 app.use(errorHandler);
-
-
-
-mongoose.connect(MONGODB_URI).then(
-  () => console.log("Connected to MongoDB")
-).catch(
-  error => console.error("Failed to connect to MongoDB", error)
-);
 
 app.listen(
   PORT, () => console.log(`Server is running at http://localhost:${PORT}`)
